@@ -6,15 +6,11 @@ enum stack_err_t {
     NO_MISTAKE,
     NULL_STACK_PTR,
     NULL_STACK_ELEM,
-    CANARY_NOT_IN_PLACES,
+    CANARY_ST_NOT_IN_PLACES,
     PTR_OUT_OF_IDX,
     STACK_HASH_NOT_CORRECT,
     DATA_HASH_NOT_CORRECT
 };
 
-enum correct{
-    NOT_CORRECT,
-    CORRECT
-};
 
 #endif //MISTAKES_CODE_H

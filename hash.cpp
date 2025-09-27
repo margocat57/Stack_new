@@ -23,15 +23,17 @@ ssize_t calculate_struct_hash(stack_t_t* stack) {
     return create_djb2_hash((char*)&temp, sizeof(temp));
 }
 
-ssize_t create_djb2_hash(const char* data_for_hash, size_t size){
+ssize_t create_djb2_hash(char* data, size_t size){
 
-    //проверяем что с data_for_hash все хорошо
+    // check data
 
     size_t hash = 5381;
     
     for (size_t i = 0; i < size; i++) {
-        hash = ((hash << 5) + hash) + data_for_hash[i];
+        hash = ((hash << 5) + hash) + data[i];
     }
-    
+
+    // check data
+
     return hash;
 }

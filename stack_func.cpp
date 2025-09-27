@@ -52,7 +52,7 @@ stack_err_t stack_verify(stack_t_t* stack){
     else if(stack->front_canary != FRONTCANARY || stack->tail_canary != TAILCANARY){
         // печать в лог файл
         fprintf(stderr, "CANARIES CORRUPTED\n");
-        return CANARY_NOT_IN_PLACES;
+        return CANARY_ST_NOT_IN_PLACES;
     }
 
     else if(stack -> data == NULL || stack->ptr == NULL || stack->capacity == 0 || stack->size_of_elem == 0){
@@ -87,10 +87,10 @@ stack_err_t stack_verify(stack_t_t* stack){
     return NO_MISTAKE;
 }
 
-correct stack_push(stack_t_t* stack, const void* elem){
+void stack_push(stack_t_t* stack, const void* elem){
 
-    if(MY_ASSERT(stack_verify(stack) == NO_MISTAKE)) return NOT_CORRECT;
-    if(MY_ASSERT(elem != NULL)) return NOT_CORRECT;
+    if(MY_ASSERT(stack_verify(stack) == NO_MISTAKE)) return;
+    if(MY_ASSERT(elem != NULL)) return;
 
     size_t current_size = (stack->ptr - (stack->data + RESERVED/ 2)) / stack->size_of_elem;
     if (current_size >= stack->capacity){
@@ -102,15 +102,14 @@ correct stack_push(stack_t_t* stack, const void* elem){
     stack ->djb2 = calculate_struct_hash(stack);
     stack -> djb2_data = create_djb2_hash(stack -> data, stack->size_of_elem * stack->capacity + RESERVED);
 
-    if(MY_ASSERT(stack_verify(stack) == NO_MISTAKE)) return NOT_CORRECT;
+    if(MY_ASSERT(stack_verify(stack) == NO_MISTAKE)) return;
 
-    return CORRECT;
 }
 
-correct stack_push(stack_t_t* stack, void* elem){
+void stack_pop(stack_t_t* stack, void* elem){
 
-    if(MY_ASSERT(stack_verify(stack) == NO_MISTAKE)) return NOT_CORRECT;
-    if(MY_ASSERT(elem != NULL)) return NOT_CORRECT;
+    if(MY_ASSERT(stack_verify(stack) == NO_MISTAKE)) return;
+    if(MY_ASSERT(elem != NULL)) return;
     
     if (stack->ptr >= stack->data + RESERVED / 2 + stack->size_of_elem){
         stack -> ptr -= stack -> size_of_elem;
@@ -121,34 +120,31 @@ correct stack_push(stack_t_t* stack, void* elem){
     stack ->djb2 = calculate_struct_hash(stack);
     stack -> djb2_data = create_djb2_hash(stack -> data, stack->size_of_elem * stack->capacity + RESERVED);
 
-    if(MY_ASSERT(stack_verify(stack) == NO_MISTAKE)) return NOT_CORRECT;
-
-    return CORRECT;
+    if(MY_ASSERT(stack_verify(stack) == NO_MISTAKE)) return;
 }
 
-correct stack_top(stack_t_t* stack, void* elem){
+void stack_top(stack_t_t* stack, void* elem){
 
-    if(MY_ASSERT(stack_verify(stack) == NO_MISTAKE)) return NOT_CORRECT;
-    if(MY_ASSERT(elem != NULL)) return NOT_CORRECT;
+    if(MY_ASSERT(stack_verify(stack) == NO_MISTAKE)) return;
+    if(MY_ASSERT(elem != NULL)) return;
     
     if (stack->ptr >= stack->data + RESERVED / 2 + stack->size_of_elem){
         stack -> ptr -= stack -> size_of_elem;
         memcpy(elem, stack -> ptr, stack->size_of_elem);
         stack -> ptr += stack -> size_of_elem;
-        return CORRECT;
+        return;
     }
-    return NOT_CORRECT;
 }
 
-correct stack_realloc(stack_t_t* stack){
+void stack_realloc(stack_t_t* stack){
 
-    if(MY_ASSERT(stack_verify(stack) == NO_MISTAKE)) return NOT_CORRECT;
+    if(MY_ASSERT(stack_verify(stack) == NO_MISTAKE)) return;
     
     size_t new_capacity = stack->capacity * 2;
     size_t ptr_pos = stack->ptr - (stack->data + RESERVED/2);
 
     char* new_data = (char*)realloc(stack->data, new_capacity*stack->size_of_elem + RESERVED);
-    if(MY_ASSERT(new_data != NULL)) return NOT_CORRECT;
+    if(MY_ASSERT(new_data != NULL)) return;
 
     stack->data = new_data;
     memset(stack->data + RESERVED/2 + stack->capacity * stack->size_of_elem, 0, (new_capacity-stack->capacity)*stack->size_of_elem + RESERVED/2);
@@ -159,7 +155,18 @@ correct stack_realloc(stack_t_t* stack){
     stack ->djb2 = calculate_struct_hash(stack);
     stack -> djb2_data = create_djb2_hash(stack -> data, stack->size_of_elem * stack->capacity + RESERVED);
 
-    if(MY_ASSERT(stack_verify(stack) == NO_MISTAKE)) return NOT_CORRECT;
+    if(MY_ASSERT(stack_verify(stack) == NO_MISTAKE)) return;
 
-    return CORRECT;
+}
+
+void free_stack(stack_t_t* stack){
+    if(MY_ASSERT(stack_verify(stack) == NO_MISTAKE)) return;
+
+    memset(stack->data, 0, stack->capacity * stack->size_of_elem);
+    free(stack->data);
+
+    memset(stack, 0, sizeof(stack));
+    free(stack);
+
+    return;
 }

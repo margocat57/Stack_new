@@ -14,6 +14,6 @@ struct temp_struct{
 
 ssize_t calculate_struct_hash(const stack_t_t* stack);
 
-ssize_t create_djb2_hash(const char* data_for_hash, size_t size);
+ssize_t create_djb2_hash(char* data, size_t size);
 
 #endif //HASH_H

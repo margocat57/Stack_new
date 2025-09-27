@@ -23,7 +23,7 @@ static ssize_t create_handle(stack_t_t* stack){
 
 static stack_t_t* delete_handle(size_t handle){
 
-    // проверка что мы не обращаемся за пределы массива хотя функция и внутренняя
+    if(MY_ASSERT(handle < HANDLER_MAX_SIZE)) return NULL;
 
     if(HANDLERS[handle]){
         stack_t_t* stack = HANDLERS[handle];
@@ -35,10 +35,40 @@ static stack_t_t* delete_handle(size_t handle){
     return NULL;
 }
 
-// далее при функции инициализации стека мы должны возвращать номер свободной полки
+ssize_t stak_ctor_handler(long long int num_of_elem, long long int size_of_elem){
+    stack_t_t* stack = stack_ctor(num_of_elem, size_of_elem);
+    return create_handle(stack);
+}
 
-// потом все функции принимают номер полки, а этом файле они должгы вызывать функции со структурой
-// также проверять что мы не обращаемся к полке за пределами структуры
-// обязательная проверка что номер полки не больше максимального значения
+void stack_push_handle(size_t handle, const void* elem){
+    if(MY_ASSERT(handle>=HANDLER_MAX_SIZE)) return;
+    if(MY_ASSERT(HANDLERS[handle])) return;
+
+    stack_t_t *stack = HANDLERS[handle];
+    stack_push(stack, elem);
+}
+
+void stack_pop_handle(size_t handle, void* elem){
+    if(MY_ASSERT(handle>=HANDLER_MAX_SIZE)) return;
+    if(MY_ASSERT(HANDLERS[handle])) return;
+
+    stack_t_t *stack = HANDLERS[handle];
+    stack_pop(stack, elem);
+}
+
+void stack_top_handle(size_t handle, void* elem){
+    if(MY_ASSERT(handle>=HANDLER_MAX_SIZE)) return;
+    if(MY_ASSERT(HANDLERS[handle])) return;
+
+    stack_t_t *stack = HANDLERS[handle];
+    stack_pop(stack, elem);
+}
+
+void stack_free_handle(size_t handle){
+    if(MY_ASSERT(handle>=HANDLER_MAX_SIZE)) return;
+    if(MY_ASSERT(HANDLERS[handle])) return;
+
+    free_stack(delete_handle(handle));
+}
 
 // и на освобождение стека мы должны тоже вызываать освобождение полки
